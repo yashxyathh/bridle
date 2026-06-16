@@ -20,7 +20,8 @@ class MainApp extends StatelessWidget {
     );
   }
 }
-// main game page 
+
+// main game page
 class GamePage extends StatelessWidget {
   GamePage({super.key});
   final Game _game = Game();
@@ -44,7 +45,8 @@ class GamePage extends StatelessWidget {
     );
   }
 }
-// tile which is dispalyed 
+
+// tile which is dispalyed
 class Tile extends StatelessWidget {
   const Tile(this.letter, this.hitType, {super.key});
   final String letter;
@@ -72,5 +74,16 @@ class Tile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// implementation of guess input
+class GuessInput extends StatelessWidget {
+  GuessInput({super.key, required this.onSubmitGuess});
+  final void Function(String) onSubmitGuess;
+
+  @override
+  Widget build(BuildContext) {
+    return Container();
   }
 }
