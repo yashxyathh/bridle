@@ -20,7 +20,7 @@ class MainApp extends StatelessWidget {
     );
   }
 }
-
+// main game page 
 class GamePage extends StatelessWidget {
   GamePage({super.key});
   final Game _game = Game();
@@ -44,7 +44,7 @@ class GamePage extends StatelessWidget {
     );
   }
 }
-
+// tile which is dispalyed 
 class Tile extends StatelessWidget {
   const Tile(this.letter, this.hitType, {super.key});
   final String letter;
