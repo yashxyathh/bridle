@@ -31,5 +31,5 @@ Birdle is a simple five-letter word guessing game built with Flutter. Players en
 
 ## Notes
 
-- The current word list is intentionally small and is defined in [lib/game.dart](lib/game.dart).
+- The current word list is intentionally small and is defined in [lib/game.dart](lib/game.dart) will update list in future.
 - The project is configured as a Flutter application and can be run on any platform supported by your local Flutter setup.
