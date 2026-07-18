@@ -89,6 +89,8 @@ class Game {
 
   /// The word the player is trying to guess.
   Word get hiddenWord => _wordToGuess;
+  /// Reveals the character at [index] of the hidden word, for hints.
+  String hintLetterAt(int index) => _wordToGuess[index].char;
 
   /// An unmodifiable view of every guess slot, including those still empty.
   UnmodifiableListView<Word> get guesses => UnmodifiableListView(_guesses);
