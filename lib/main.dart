@@ -1,23 +1,52 @@
 import 'package:flutter/material.dart';
 import 'game.dart';
+import 'dart:math';
 
 void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Align(alignment: Alignment.centerLeft, child: Text('Birdle')),
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 800),
+  )..forward();
+  late final Animation<double> _fade = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeIn,
+  );
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(
+        title: const Align(
+          alignment: Alignment.centerLeft,
+          child: Text('Birdle'),
         ),
-        body: Center(child: GamePage()),
       ),
-    );
+      body: Center(
+        child: FadeTransition(
+          opacity: _fade,
+          child: ScaleTransition(
+            scale: Tween(begin: 0.85, end: 1.0).animate(_fade),
+            child: GamePage(),
+          ),
+        ),
+      ),
+    ),
+  );
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
 
@@ -33,49 +62,61 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   final Game _game = Game();
   void _showResultDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => AlertDialog(
-      title: Text(_game.didWin ? 'You got it! 🎉' : 'Out of guesses'),
-      content: Text('The word was "${_game.hiddenWord}".'),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            setState(() => _game.resetGame());
-          },
-          child: const Text('Play again'),
-        ),
-      ],
-    ),
-  );
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        spacing: 5.0,
-        children: [
-          for (var guess in _game.guesses)
-            Row(
-              spacing: 5.0,
-              children: [
-                for (var letter in guess) Tile(letter.char, letter.type),
-              ],
-            ),
-          GuessInput(
-            onSubmitGuess: (String guess) {
-              setState(() => _game.guess(guess));
-              if (_game.didWin || _game.didLose) _showResultDialog();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(_game.didWin ? 'You got it! 🎉' : 'Out of guesses'),
+        content: Text('The word was "${_game.hiddenWord}".'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              setState(() => _game.resetGame());
             },
-          ),
-          OnScreenKeyboard(
-            letterStatuses: _game.letterStatuses,
-            onKeyTap: (c) {},
+            child: const Text('Play again'),
           ),
         ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              spacing: 5.0,
+              children: [
+                for (var guess in _game.guesses)
+                  Row(
+                    spacing: 5.0,
+                    children: [
+                      for (var letter in guess) Tile(letter.char, letter.type),
+                    ],
+                  ),
+                Column(
+                  children: [
+                    GuessInput(
+                      onSubmitGuess: (String guess) {
+                        setState(() => _game.guess(guess));
+                        if (_game.didWin || _game.didLose) _showResultDialog();
+                      },
+                    ),
+                    OnScreenKeyboard(
+                      letterStatuses: _game.letterStatuses,
+                      onKeyTap: (c) {},
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -164,6 +205,19 @@ class GuessInput extends StatelessWidget {
             onSubmitGuess(_textEditingController.text.trim());
             _textEditingController.clear();
             _focusNode.requestFocus();
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.lightbulb_outline),
+          onPressed: () {
+            final i = Random().nextInt(5);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Letter ${i + 1} is "${_game.hintLetterAt(i).toUpperCase()}"',
+                ),
+              ),
+            );
           },
         ),
       ],
