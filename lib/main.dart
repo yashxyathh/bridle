@@ -92,11 +92,17 @@ class Tile extends StatelessWidget {
             _ => Colors.white,
           },
         ),
-        child: Center(child: Text(letter.toUpperCase(), style: Theme.of(context).textTheme.titleLarge)),
+        child: Center(
+          child: Text(
+            letter.toUpperCase(),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
       ),
     );
   }
 }
+
 // implementation of guess input
 class GuessInput extends StatelessWidget {
   GuessInput({super.key, required this.onSubmitGuess});
@@ -142,4 +148,50 @@ class GuessInput extends StatelessWidget {
       ],
     );
   }
+}
+
+class OnScreenKeyboard extends StatelessWidget {
+  const OnScreenKeyboard({
+    super.key,
+    required this.letterStatuses,
+    required this.onKeyTap,
+  });
+  final Map<String, HitType> letterStatuses;
+  final void Function(String) onKeyTap;
+  static const _rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+  Color _colorFor(String c) => switch (letterStatuses[c]) {
+    HitType.hit => Colors.green,
+    HitType.partial => Colors.yellow,
+    HitType.miss => Colors.grey,
+    _ => Colors.grey.shade200,
+  };
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      for (final row in _rows)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (final c in row.split(''))
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: GestureDetector(
+                  onTap: () => onKeyTap(c),
+                  child: Container(
+                    width: 32,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: _colorFor(c),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(c.toUpperCase()),
+                  ),
+                ),
+              ),
+          ],
+        ),
+    ],
+  );
 }

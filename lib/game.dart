@@ -109,6 +109,21 @@ class Game {
     return maxGuesses - activeIndex;
   }
 
+  Map<String, HitType> get letterStatuses {
+    const rank = {HitType.miss: 1, HitType.partial: 2, HitType.hit: 3};
+    final result = <String, HitType>{};
+    for (final word in _guesses) {
+      if (word.isEmpty) continue;
+      for (final letter in word) {
+        final current = result[letter.char];
+        if (current == null || rank[letter.type]! > rank[current]!) {
+          result[letter.char] = letter.type;
+        }
+      }
+    }
+    return result;
+  }
+
   /// Whether the most recent guess matches the hidden word.
   bool get didWin {
     if (_guesses.first.isEmpty) return false;
