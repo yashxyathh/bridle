@@ -1,4 +1,4 @@
-const legalGuesses = <String>[
+const List<String> legalGuesses = [
   "aahed",
   "aalii",
   "aargh",
