@@ -32,7 +32,25 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   final Game _game = Game();
-
+  void _showResultDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => AlertDialog(
+      title: Text(_game.didWin ? 'You got it! 🎉' : 'Out of guesses'),
+      content: Text('The word was "${_game.hiddenWord}".'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            setState(() => _game.resetGame());
+          },
+          child: const Text('Play again'),
+        ),
+      ],
+    ),
+  );
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -49,10 +67,13 @@ class _GamePageState extends State<GamePage> {
             ),
           GuessInput(
             onSubmitGuess: (String guess) {
-              setState(() {
-                _game.guess(guess);
-              });
+              setState(() => _game.guess(guess));
+              if (_game.didWin || _game.didLose) _showResultDialog();
             },
+          ),
+          OnScreenKeyboard(
+            letterStatuses: _game.letterStatuses,
+            onKeyTap: (c) {},
           ),
         ],
       ),
