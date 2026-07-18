@@ -68,30 +68,35 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 500),
-      curve: Curves.bounceIn,
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        color: switch (hitType) {
-          HitType.hit => Colors.green,
-          HitType.partial => Colors.yellow,
-          HitType.miss => Colors.grey,
-          _ => Colors.white,
-        },
-      ),
-      child: Center(
-        child: Text(
-          letter.toUpperCase(),
-          style: Theme.of(context).textTheme.titleLarge,
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(hitType), // restarts the tween whenever hitType changes
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 400),
+      builder: (context, value, child) {
+        final angle = (1 - value) * (3.14159 / 2);
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()..rotateX(angle),
+          child: child,
+        );
+      },
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          color: switch (hitType) {
+            HitType.hit => Colors.green,
+            HitType.partial => Colors.yellow,
+            HitType.miss => Colors.grey,
+            _ => Colors.white,
+          },
         ),
+        child: Center(child: Text(letter.toUpperCase(), style: Theme.of(context).textTheme.titleLarge)),
       ),
     );
   }
 }
-
 // implementation of guess input
 class GuessInput extends StatelessWidget {
   GuessInput({super.key, required this.onSubmitGuess});
@@ -118,7 +123,7 @@ class GuessInput extends StatelessWidget {
               focusNode: _focusNode,
 
               onSubmitted: (input) {
-                print(input);
+                onSubmitGuess(input.trim());
                 _textEditingController.clear();
                 _focusNode.requestFocus();
               },
