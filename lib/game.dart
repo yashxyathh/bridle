@@ -8,6 +8,8 @@ library;
 
 import 'dart:collection';
 import 'dart:math';
+import 'legal_words.dart';
+import 'legal_guesses.dart';
 
 /// The result of evaluating a [Letter] of a guess against the hidden word.
 enum HitType {
